@@ -1,0 +1,10 @@
+# 程序配置文件
+
+# RabbitMQ连接字符串
+RabbitMQConnUrl : amqp://rabbit:rabbit@127.0.0.1:5672/task
+
+# RabbitMQ获取任务队列
+RabbitMQTaskQueue : task
+
+# RabbitMQ任务结果写入key
+RabbitMQResultKey : whois
