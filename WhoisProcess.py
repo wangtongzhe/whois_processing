@@ -2,17 +2,21 @@ import pika
 import ThirdPart.whois as whois
 import json
 import time
+import re
 import hashlib
 from model.whois_item import *
 from config_helper import *
 
 
 params = pika.URLParameters(ConfigHelper.rabbit_conn_url())
+ip_reg = re.compile("^((?:(2[0-4]\d)|(25[0-5])|([01]?\d\d?))\.){3}(?:(2[0-4]\d)|(255[0-5])|([01]?\d\d?))$")
 
 
 def get_whois_info(domain):
     # 初始化信息
     if "." not in domain:
+        return None
+    if ip_reg.match(domain):
         return None
     obj_item = WhoisItem(domain, domain[domain.rindex(".") + 1:])
     try:
