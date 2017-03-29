@@ -135,7 +135,7 @@ if __name__ == '__main__':
                 if domain_obj is not None:
                     # 写入whois
                     print(json.dumps(domain_obj, default=lambda obj: obj.__dict__))
-                    channel_uri_read.basic_publish(exchange='amq.direct', routing_key='ConfigHelper.rabbit_result_key()',
+                    channel_uri_read.basic_publish(exchange='amq.direct', routing_key=ConfigHelper.rabbit_result_key(),
                                                    body=json.dumps(domain_obj, default=lambda obj: obj.__dict__),
                                                    properties=pika.BasicProperties(delivery_mode=2))
                 channel_uri_read.basic_ack(read_item[0].delivery_tag, False)
