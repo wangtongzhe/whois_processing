@@ -129,17 +129,21 @@ if __name__ == '__main__':
                     print("Waiting for new data 5 seconds")
                     time.sleep(5)
                     continue
-                domain_result = bytes.decode(read_item[2], encoding="utf-8")
-                print('{0} : start process domain --- {1}'.format(datetime.datetime.now(), domain_result))
-                domain_obj = get_whois_info(domain_result)
+                domain_task_string = bytes.decode(read_item[2], encoding="utf-8")
+                domain_task_obj = json.loads(domain_task_string)
+                if "domain" not in domain_task_obj:
+                    continue
+                print('{0} : start process domain --- {1}'.format(datetime.datetime.now(), domain_task_obj["domain"]))
+                domain_obj = get_whois_info(domain_task_obj["domain"])
                 if domain_obj is not None:
                     # 写入whois
+                    domain_obj.task = domain_task_obj
                     print(json.dumps(domain_obj, default=lambda obj: obj.__dict__))
                     channel_uri_read.basic_publish(exchange='amq.direct', routing_key=ConfigHelper.rabbit_result_key(),
                                                    body=json.dumps(domain_obj, default=lambda obj: obj.__dict__),
                                                    properties=pika.BasicProperties(delivery_mode=2))
                 channel_uri_read.basic_ack(read_item[0].delivery_tag, False)
-                print('{0} : finished process domain --- {1}'.format(datetime.datetime.now(), domain_result))
+                print('{0} : finished process domain --- {1}'.format(datetime.datetime.now(), domain_task_obj["domain"]))
         except Exception as ex:
             print(ex)
             time.sleep(60)
